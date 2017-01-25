@@ -67,28 +67,19 @@ class MyRobot(wpilib.IterativeRobot):
                 self.bToggle = 1
             self.robot_drive.mecanumDrive_Cartesian(self.stick.getRawAxis(1)*self.bToggle, self.stick.getRawAxis(0)*self.bToggle, self.stick.getRawAxis(4), self.gyro.getAngle())   #self.gyro.getAngle()
             wpilib.Timer.delay(0.005) # wait for a motor update time
-        except:
-            if not self.isFmsAttached():
-                raise
-        try:
+
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
             right_trig = -1 * right_trig
             self.winch.set((left_trig + right_trig) * 1)
-        except:
-            if not self.isFmsAttached():
-                raise
-        try:
+
             if self.stick.getRawButton(1) is True:
                 self.loader.set(1)
                 self.shooter.set(1)
             else:
                 self.loader.set(0)
                 self.shooter.set(0)
-        except:
-            if not self.isFmsAttached():
-                raise
-        try:
+
             if self.stick.getRawButton(4) is True:
                 self.stick.setRumble(0, 1)
                 self.stick.setRumble(1, 1)
