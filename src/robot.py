@@ -4,6 +4,7 @@
 """
 
 import wpilib
+from robotpy_ext.common_drivers import navx
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -28,16 +29,11 @@ class MyRobot(wpilib.IterativeRobot):
         
         # initialize motors
         self.loader = wpilib.Spark(4)
-        self.loader.setSafetyEnabled(True)
         self.shooter = wpilib.Spark(5)
-        self.shooter.setSafetyEnabled(True)
-#         self.shooter.setInverted(True)
         self.winch = wpilib.Spark(6)
-        self.winch.setSafetyEnabled(True)
-#         self.winch.setInverted(True)
         
         #initialize switch
-#         self.flipper_switch = wpilib.DigitalInput(0)
+#         self.gear_switch = wpilib.DigitalInput(0)
 
         self.bToggle = 1
 
@@ -66,7 +62,7 @@ class MyRobot(wpilib.IterativeRobot):
             else:
                 self.bToggle = 1
             self.robot_drive.mecanumDrive_Cartesian(self.stick.getRawAxis(1)*self.bToggle, self.stick.getRawAxis(0)*self.bToggle, self.stick.getRawAxis(4), self.gyro.getAngle())   #self.gyro.getAngle()
-            wpilib.Timer.delay(0.005) # wait for a motor update time
+ #            wpilib.Timer.delay(0.005) # wait for a motor update time
 
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
