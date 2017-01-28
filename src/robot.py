@@ -62,7 +62,6 @@ class MyRobot(wpilib.IterativeRobot):
             else:
                 self.bToggle = 1
             self.robot_drive.mecanumDrive_Cartesian(self.stick.getRawAxis(1)*self.bToggle, self.stick.getRawAxis(0)*self.bToggle, self.stick.getRawAxis(4), self.gyro.getAngle())   #self.gyro.getAngle()
- #            wpilib.Timer.delay(0.005) # wait for a motor update time
 
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
