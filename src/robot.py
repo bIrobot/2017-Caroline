@@ -5,6 +5,9 @@
 
 import wpilib
 from robotpy_ext.common_drivers import navx
+from robotpy_ext.common_drivers import xl_max_sonar_ez
+from networktables import NetworkTable
+import networktables
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -12,26 +15,28 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         is used for initialization code.
         """
+        # joystick 1 on the driver station
+        self.stick = wpilib.Joystick(0)
         
         # object that handles basic drive operations
         self.robot_drive = wpilib.RobotDrive(0, 1, 2, 3)
-        self.robot_drive.setExpiration(0.1)
-        
         self.robot_drive.setInvertedMotor(0, True)
         self.robot_drive.setInvertedMotor(1, True)
         self.robot_drive.setSafetyEnabled(True)
-        
-        # Initialize Gyro Board
-        self.gyro = wpilib.ADXRS450_Gyro(0)
-        
-        # joystick 1 on the driver station
-        self.stick = wpilib.Joystick(0)
+        self.robot_drive.setExpiration(0.1)
         
         # initialize motors
         self.loader = wpilib.Spark(4)
         self.shooter = wpilib.Spark(5)
         self.winch = wpilib.Spark(6)
         
+        # Initialize Gyro
+        self.gyro = wpilib.ADXRS450_Gyro(0)
+        
+        # Initialize Accelerometer
+#         self.accelerometer = wpilib.ADXL362(8, 0)
+        
+                
         #initialize switch
 #         self.gear_switch = wpilib.DigitalInput(0)
 
@@ -61,7 +66,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.bToggle = -1
             else:
                 self.bToggle = 1
-            self.robot_drive.mecanumDrive_Cartesian(self.stick.getRawAxis(1)*self.bToggle, self.stick.getRawAxis(0)*self.bToggle, self.stick.getRawAxis(4), self.gyro.getAngle())   #self.gyro.getAngle()
+            self.robot_drive.mecanumDrive_Cartesian(self.stick.getRawAxis(1)*self.bToggle, self.stick.getRawAxis(0)*self.bToggle, self.stick.getRawAxis(4), 0)   #self.gyro.getAngle()
 
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
