@@ -72,12 +72,13 @@ class MyRobot(wpilib.IterativeRobot):
             yAxis = self.stick.getRawAxis(0)*-0.5
             rotation = self.stick.getRawAxis(4)*0.25
 #             gyroAngle = self.gyro.getAngle()
-            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
-            
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
-            right_trig = -1 * right_trig
-            self.winch.set((left_trig + right_trig) * 1)
+#             right_trig = right_trig * -1
+
+            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
+
+            self.winch.set(right_trig * 1)
  
             if self.stick.getRawButton(1) is True:
                 self.loader.set(1)
