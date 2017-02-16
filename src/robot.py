@@ -29,6 +29,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.loader = wpilib.Spark(4)
         self.shooter = wpilib.Spark(5)
         self.winch = wpilib.Spark(6)
+        self.intake = wpilib.Spark(7)
         
         # Initialize Gyro
         self.gyro = wpilib.ADXRS450_Gyro(0)
@@ -79,12 +80,20 @@ class MyRobot(wpilib.IterativeRobot):
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
 
             self.winch.set(right_trig * 1)
+
+            if self.stick.getRawButton(0) is True:
+                self.intake.set(1)
+            else:
+                self.intake.set(0)
  
             if self.stick.getRawButton(1) is True:
                 self.loader.set(1)
-                self.shooter.set(1)
             else:
                 self.loader.set(0)
+
+            if self.stick.getRawButton(5) is True:
+                self.shooter.set(1)
+            else:
                 self.shooter.set(0)
 
             if self.stick.getRawButton(4) is True:
