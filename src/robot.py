@@ -6,8 +6,8 @@
 import wpilib
 # from robotpy_ext.common_drivers import navx
 # from robotpy_ext.common_drivers import xl_max_sonar_ez
-from networktables import NetworkTable
-import networktables
+# from networktables import NetworkTable
+# import networktables
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -22,17 +22,18 @@ class MyRobot(wpilib.IterativeRobot):
         self.robot_drive = wpilib.RobotDrive(0, 1, 2, 3)
         self.robot_drive.setInvertedMotor(0, True)
         self.robot_drive.setInvertedMotor(1, True)
-        self.robot_drive.setSafetyEnabled(True)
-        self.robot_drive.setExpiration(0.1)
+#         self.robot_drive.setSafetyEnabled(True)
+#         self.robot_drive.setExpiration(0.1)
 
         # initialize motors
         self.loader = wpilib.Spark(4)
         self.shooter = wpilib.Spark(5)
-        self.winch = wpilib.Spark(6)
-        self.intake = wpilib.Spark(7)
+        self.intake = wpilib.Spark(6)
+        self.winch = wpilib.Spark(7)
+        self.vibMotor = wpilib.Spark(8)
 
         # Initialize Gyro
-        self.gyro = wpilib.ADXRS450_Gyro(0)
+#         self.gyro = wpilib.ADXRS450_Gyro(0)
 
         # Initialize Accelerometer
 #         self.accelerometer = wpilib.ADXL362(8, 0)
@@ -58,14 +59,14 @@ class MyRobot(wpilib.IterativeRobot):
             if not self.isFmsAttached():
                 raise
 
-    def teleopInit(self):
-        """This function is run once each time the robot enters operator control mode."""
-        wpilib.IterativeRobot.teleopInit(self)
-
-        xAxis = 0
-        yAxis = 0
-        rotation = 0
-        gyroAngle = 0
+#     def teleopInit(self):
+#         """This function is run once each time the robot enters operator control mode."""
+#         wpilib.IterativeRobot.teleopInit(self)
+# 
+#         xAxis = 0
+#         yAxis = 0
+#         rotation = 0
+#         gyroAngle = 0
 
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
@@ -77,32 +78,36 @@ class MyRobot(wpilib.IterativeRobot):
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
 #             right_trig = right_trig * -1
+            gyroAngle = 0
+#             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
 
-            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
-
-            self.winch.set(right_trig * 1)
-
-            if self.stick.getRawButton(0) is True:
-                self.intake.set(1)
-            else:
-                self.intake.set(0)
+            self.winch.set(right_trig * -1)
+            self.vibMotor.set(left_trig * -1)
  
             if self.stick.getRawButton(1) is True:
                 self.loader.set(1)
             else:
                 self.loader.set(0)
+                
+            if self.stick.getRawButton(2) is True:
+                self.intake.set(0.65)
+            else:
+                self.intake.set(0)
 
+#             if self.stick.getRawButton(4) is True:
+#                 self.stick.setRumble(0, 1)
+#                 self.stick.setRumble(1, 1)
+#                 self.vibMotor.set(1)
+#             else:
+#                 self.stick.setRumble(0, 0)
+#                 self.stick.setRumble(1, 0)
+#                 self.vibMotor.set(0)
+                
             if self.stick.getRawButton(5) is True:
-                self.shooter.set(1)
+                self.shooter.set(0.72387)
             else:
                 self.shooter.set(0)
 
-            if self.stick.getRawButton(4) is True:
-                self.stick.setRumble(0, 1)
-                self.stick.setRumble(1, 1)
-            else:
-                self.stick.setRumble(0, 0)
-                self.stick.setRumble(1, 0)
         except:
             if not self.isFmsAttached():
                 raise
