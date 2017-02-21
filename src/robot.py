@@ -4,10 +4,7 @@
 """
 
 import wpilib
-from test._test_multiprocessing import sqr
 # from robotpy_ext.common_drivers import navx
-# from networktables import NetworkTable
-# import networktables
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -76,7 +73,7 @@ class MyRobot(wpilib.IterativeRobot):
             right_trig = self.stick.getRawAxis(3)
 #             right_trig = right_trig * -1
             gyroAngle = 0
-#             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
+            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
 
             self.winch.set(right_trig * -1)
             self.agitator.set(left_trig * -1)
