@@ -94,14 +94,12 @@ class MyRobot(wpilib.IterativeRobot):
             else:
                 self.intake.set(0)
 
-#             if self.stick.getRawButton(4) is True:
-#                 self.stick.setRumble(0, 1)
-#                 self.stick.setRumble(1, 1)
-#                 self.vibMotor.set(1)
-#             else:
-#                 self.stick.setRumble(0, 0)
-#                 self.stick.setRumble(1, 0)
-#                 self.vibMotor.set(0)
+            if self.stick.getRawButton(4) is True:
+                self.stick.setRumble(0, 1)
+                self.stick.setRumble(1, 1)
+            else:
+                self.stick.setRumble(0, 0)
+                self.stick.setRumble(1, 0)
                 
             if self.stick.getRawButton(5) is True:
                 self.shooter.set(0.72387)
