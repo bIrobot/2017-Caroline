@@ -4,6 +4,7 @@
 """
 
 import wpilib
+from test._test_multiprocessing import sqr
 # from robotpy_ext.common_drivers import navx
 # from networktables import NetworkTable
 # import networktables
@@ -61,9 +62,15 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
-            xAxis = self.stick.getRawAxis(1)*-0.5
-            yAxis = self.stick.getRawAxis(0)*-0.5
-            rotation = self.stick.getRawAxis(4)*0.25
+            xAxis = self.stick.getRawAxis(1)
+            xAxis = self.normalize(xAxis, 0.1)*-0.5
+            
+            yAxis = self.stick.getRawAxis(0)
+            yAxis = self.normalize(yAxis, 0.1)*-0.5
+            
+            rotation = self.stick.getRawAxis(4)
+            rotation = self.normalize(rotation, 0.1)*0.25
+            
 #             gyroAngle = self.gyro.getAngle()
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
@@ -105,6 +112,17 @@ class MyRobot(wpilib.IterativeRobot):
         
     def disabledInit(self):
         wpilib.IterativeRobot.disabledInit(self)
-         
+        
+    def normalize(self, input, deadzone):
+        if input > 0:
+            if (input - deadzone) < 0:
+                return 0
+            else:
+                return ((input - deadzone)/(1 - deadzone))
+        elif input < 0:
+            if (input + deadzone) > 0:
+                return 0
+            else:
+                return ((input + deadzone)/(1 - deadzone))
 if __name__ == "__main__":
     wpilib.run(MyRobot)
