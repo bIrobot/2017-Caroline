@@ -5,7 +5,6 @@
 
 import wpilib
 # from robotpy_ext.common_drivers import navx
-# from robotpy_ext.common_drivers import xl_max_sonar_ez
 # from networktables import NetworkTable
 # import networktables
 
@@ -22,7 +21,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.robot_drive = wpilib.RobotDrive(0, 1, 2, 3)
         self.robot_drive.setInvertedMotor(0, True)
         self.robot_drive.setInvertedMotor(1, True)
-#         self.robot_drive.setSafetyEnabled(True)
+        self.robot_drive.setSafetyEnabled(False)
 #         self.robot_drive.setExpiration(0.1)
 
         # initialize motors
@@ -30,7 +29,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.shooter = wpilib.Spark(5)
         self.intake = wpilib.Spark(6)
         self.winch = wpilib.Spark(7)
-        self.vibMotor = wpilib.Spark(8)
+        self.agitator = wpilib.Spark(8)
 
         # Initialize Gyro
 #         self.gyro = wpilib.ADXRS450_Gyro(0)
@@ -59,15 +58,6 @@ class MyRobot(wpilib.IterativeRobot):
             if not self.isFmsAttached():
                 raise
 
-#     def teleopInit(self):
-#         """This function is run once each time the robot enters operator control mode."""
-#         wpilib.IterativeRobot.teleopInit(self)
-# 
-#         xAxis = 0
-#         yAxis = 0
-#         rotation = 0
-#         gyroAngle = 0
-
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
@@ -82,7 +72,7 @@ class MyRobot(wpilib.IterativeRobot):
 #             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
 
             self.winch.set(right_trig * -1)
-            self.vibMotor.set(left_trig * -1)
+            self.agitator.set(left_trig * -1)
  
             if self.stick.getRawButton(1) is True:
                 self.loader.set(1)
