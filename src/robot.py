@@ -35,7 +35,6 @@ class MyRobot(wpilib.IterativeRobot):
         # Initialize Accelerometer
 #         self.accelerometer = wpilib.ADXL362(8, 0)
 
-
         #initialize switch
 #         self.gear_switch = wpilib.DigitalInput(0)
 
