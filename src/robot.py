@@ -19,7 +19,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.robot_drive = wpilib.RobotDrive(0, 1, 2, 3)
         self.robot_drive.setInvertedMotor(0, True)
         self.robot_drive.setInvertedMotor(1, True)
-        self.robot_drive.setSafetyEnabled(False)
+#         self.robot_drive.setSafetyEnabled(True)
 #         self.robot_drive.setExpiration(0.1)
 
         # initialize motors
@@ -66,7 +66,7 @@ class MyRobot(wpilib.IterativeRobot):
             yAxis = self.normalize(yAxis, 0.1)*-0.5
             
             rotation = self.stick.getRawAxis(4)
-            rotation = self.normalize(rotation, 0.1)*0.25
+            rotation = self.normalize(rotation, 0.1)*0.35
             
 #             gyroAngle = self.gyro.getAngle()
             left_trig = self.stick.getRawAxis(2)
@@ -96,7 +96,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.stick.setRumble(1, 0)
                 
             if self.stick.getRawButton(5) is True:
-                self.shooter.set(0.72387)
+                self.shooter.set(0.70387)
             else:
                 self.shooter.set(0)
 
@@ -121,5 +121,7 @@ class MyRobot(wpilib.IterativeRobot):
                 return 0
             else:
                 return ((input + deadzone)/(1 - deadzone))
+        else:
+            return 0
 if __name__ == "__main__":
     wpilib.run(MyRobot)
