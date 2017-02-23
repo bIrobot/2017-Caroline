@@ -59,15 +59,15 @@ class MyRobot(wpilib.IterativeRobot):
         """This function is called periodically during operator control."""
         try:
             xAxis = self.stick.getRawAxis(1) #Get value
-            xAxis = self.normalize(xAxis, 0.1) #Set deadzone
+            xAxis = self.normalize(xAxis, 0.18) #Set deadzone
             xAxis = self.joystickAdjust(xAxis, 0.5) #Adjust sensitivity
             
             yAxis = self.stick.getRawAxis(0)
-            yAxis = self.normalize(yAxis, 0.1)
+            yAxis = self.normalize(yAxis, 0.18)
             yAxis = self.joystickAdjust(yAxis, 0.5)
             
             rotation = self.stick.getRawAxis(4)
-            rotation = self.normalize(rotation, 0.1)
+            rotation = self.normalize(rotation, 0.18)
             rotation = self.joystickAdjust(rotation, 0.5)
             
 #             gyroAngle = self.gyro.getAngle()
