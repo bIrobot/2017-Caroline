@@ -58,21 +58,25 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
-            xAxis = self.stick.getRawAxis(1)
-            xAxis = self.normalize(xAxis, 0.1)*-0.5
+            xAxis = self.stick.getRawAxis(1) #Get value
+            xAxis = self.normalize(xAxis, 0.1) #Set deadzone
+            xAxis = self.joystickAdjust(xAxis, 0.5) #Adjust sensitivity
             
             yAxis = self.stick.getRawAxis(0)
-            yAxis = self.normalize(yAxis, 0.1)*-0.5
+            yAxis = self.normalize(yAxis, 0.1)
+            yAxis = self.joystickAdjust(yAxis, 0.5)
             
             rotation = self.stick.getRawAxis(4)
-            rotation = self.normalize(rotation, 0.1)*0.35
+            rotation = self.normalize(rotation, 0.1)
+            rotation = self.joystickAdjust(rotation, 0.5)
             
 #             gyroAngle = self.gyro.getAngle()
+            gyroAngle = 0
+            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
+            
             left_trig = self.stick.getRawAxis(2)
             right_trig = self.stick.getRawAxis(3)
 #             right_trig = right_trig * -1
-            gyroAngle = 0
-            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
 
             self.winch.set(right_trig * -1)
             self.agitator.set(left_trig * -1)
@@ -110,6 +114,7 @@ class MyRobot(wpilib.IterativeRobot):
         wpilib.IterativeRobot.disabledInit(self)
         
     def normalize(self, input, deadzone):
+        """Input should be between -1 and 1, deadzone should be between 0 and 1."""
         if input > 0:
             if (input - deadzone) < 0:
                 return 0
@@ -122,5 +127,11 @@ class MyRobot(wpilib.IterativeRobot):
                 return ((input + deadzone)/(1 - deadzone))
         else:
             return 0
+    
+    def joystickAdjust(self, input, constant):
+        """Input should be between -1 and 1, constant should be between 0 and 1."""
+        adjustedValues = constant * (input**3) + (1 - constant) * input
+        return adjustedValues
+        
 if __name__ == "__main__":
     wpilib.run(MyRobot)
