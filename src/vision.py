@@ -23,19 +23,16 @@ def main():
     camera1.setResolution(640, 480)
     camera2.setResolution(640, 480)
     server = self.addServer(name="serve_" + "USB Camera")
-    
+    cameraTable = NetworkTables.getTable("Camera")
     
     while True:
-        cameraTable = NetworkTables.getTable("Camera")
-        switchValue = cameraTable.getNumber("whatCamera", 0)
+        whatCamera = cameraTable.getNumber("whatCamera", 0)
         switched = cameraTable.getNumber("switched", 0)
         
-        if switchValue is 0:
-            camera = camera1
+        if whatCamera is 0:
+            server.setSource(camera1)
         else:
-            camera = camera2
-            
-        server.setSource(camera)
+            server.setSource(camera2)
         
         while switched is 0:
             switched = cameraTable.getNumber("switched", 0)
