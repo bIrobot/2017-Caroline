@@ -69,7 +69,6 @@ class MyRobot(wpilib.IterativeRobot):
             rotation = self.normalize(rotation, 0.1)
             rotation = self.joystickAdjust(rotation, 0.5)
             
-#             gyroAngle = self.gyro.getAngle()
             gyroAngle = 0
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
  
@@ -93,11 +92,9 @@ class MyRobot(wpilib.IterativeRobot):
                 self.loader.set(0)
 
             if self.stick.getButtonY() is True:
-#                 self.stick.setRumble(0, 1)
                 self.stick.rumble(1, 1)
             else:
                 self.stick.rumble(0, 0)
-#                 self.stick.setRumble(1, 0)
             cameraSwitch = NetworkTables.getTable("Camera")
             if self.stick.getRightBumper() is True:
                 if self.rbToggle is 0:
