@@ -49,7 +49,6 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-        self.auto_loop_counter = 0
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
