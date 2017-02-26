@@ -18,8 +18,8 @@ def main():
     
     camera1 = cscore.UsbCamera("USB Camera 1", 0)
     camera2 = cscore.UsbCamera("USB Camera 2", 1)
-    self.addCamera(camera1)
-    self.addCamera(camera2)
+    cs.addCamera(camera1)
+    cs.addCamera(camera2)
     camera1.setResolution(640, 480)
     camera2.setResolution(640, 480)
     server = cs.addServer(name="serve_" + "USB Camera")
