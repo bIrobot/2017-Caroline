@@ -22,7 +22,7 @@ def main():
     self.addCamera(camera2)
     camera1.setResolution(640, 480)
     camera2.setResolution(640, 480)
-    server = self.addServer(name="serve_" + "USB Camera")
+    server = cs.addServer(name="serve_" + "USB Camera")
     cameraTable = NetworkTables.getTable("Camera")
     
     while True:
