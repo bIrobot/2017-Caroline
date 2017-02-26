@@ -21,7 +21,7 @@ class MyRobot(wpilib.IterativeRobot):
         # start camera server
         wpilib.CameraServer.launch('vision.py:main')
         
-                # Channels for the wheels
+        # Channels for the wheels
         frontLeftChannel    = 0
         rearLeftChannel     = 1
         frontRightChannel   = 2
@@ -46,15 +46,6 @@ class MyRobot(wpilib.IterativeRobot):
             'robot_drive': self.robot_drive,
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
-
-        # Initialize Gyro
-#         self.gyro = wpilib.ADXRS450_Gyro(0)
-
-        # Initialize Accelerometer
-#         self.accelerometer = wpilib.ADXL362(8, 0)
-
-        #initialize switch
-#         self.gear_switch = wpilib.DigitalInput(0)
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
