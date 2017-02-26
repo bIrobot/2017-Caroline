@@ -17,15 +17,20 @@ class MyRobot(wpilib.IterativeRobot):
         """
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
+        self.rbToggle = 0
         
         # start camera server
         wpilib.CameraServer.launch('vision.py:main')
+        
+        # networktable stuff
+        self.cameraTable = NetworkTables.getTable("Camera")
         
         # Channels for the wheels
         frontLeftChannel    = 0
         rearLeftChannel     = 1
         frontRightChannel   = 2
         rearRightChannel    = 3
+        
         # object that handles basic drive operations
         self.robot_drive = wpilib.RobotDrive(frontLeftChannel, rearLeftChannel,
                                          frontRightChannel, rearRightChannel)
@@ -40,12 +45,11 @@ class MyRobot(wpilib.IterativeRobot):
         self.winch = wpilib.Spark(7)
         self.agitator = wpilib.Spark(8)
         
-        self.rbToggle = 0
-        
         self.components = {
             'robot_drive': self.robot_drive,
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
+        
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
@@ -104,16 +108,15 @@ class MyRobot(wpilib.IterativeRobot):
                 self.stick.rightRumble = int(0 * 65535)
                 self.stick.leftRumble = int(0 * 65535)
                 
-            cameraSwitch = NetworkTables.getTable("Camera")
             if self.stick.getBumper("right") is True:
                 if self.rbToggle is 0:
                     self.rbToggle = 1
                 else:
                     self.rbToggle = 0
-                cameraSwitch.putNumber("switched", 1)
+                self.cameraTable.putNumber("switched", 1)
             else:
-                cameraSwitch.putNumber("switched", 0)
-            cameraSwitch.putNumber("cameraSwitch", self.rbToggle)
+                self.cameraTable.putNumber("switched", 0)
+            self.cameraTable.putNumber("whatCamera", self.rbToggle)
         except:
             if not self.isFmsAttached():
                 raise

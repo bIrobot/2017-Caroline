@@ -15,16 +15,30 @@ import time
 def main():
     cs = CameraServer.getInstance()
     cs.enableLogging()
+    
+    camera1 = cscore.UsbCamera("USB Camera 1", 0)
+    camera2 = cscore.UsbCamera("USB Camera 2", 1)
+    self.addCamera(camera1)
+    self.addCamera(camera2)
+    camera1.setResolution(640, 480)
+    camera2.setResolution(640, 480)
+    server = self.addServer(name="serve_" + "USB Camera")
+    
+    
     while True:
-        cameraSwitch = NetworkTables.getTable("Camera")
-        switchValue = cameraSwitch.getNumber("cameraSwitch", 0)
-        switched = cameraSwitch.getNumber("switched", 0)
+        cameraTable = NetworkTables.getTable("Camera")
+        switchValue = cameraTable.getNumber("whatCamera", 0)
+        switched = cameraTable.getNumber("switched", 0)
         
-        camera = cs.startAutomaticCapture(dev=switchValue)
-        camera.setResolution(640, 480)
+        if switchValue is 0:
+            camera = camera1
+        else:
+            camera = camera2
+            
+        server.setSource(camera)
         
         while switched is 0:
-            switched = cameraSwitch.getNumber("switched", 0)
+            switched = cameraTable.getNumber("switched", 0)
             time.sleep(0.01)
 
 if __name__ == '__main__':
