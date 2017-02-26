@@ -4,9 +4,9 @@
 """
 
 import wpilib
-from xbox import XboxController
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
+from wpilib.joystick import Joystick
 # from robotpy_ext.common_drivers import navx
 
 class MyRobot(wpilib.IterativeRobot):
@@ -16,7 +16,7 @@ class MyRobot(wpilib.IterativeRobot):
         is used for initialization code.
         """
         # joystick 1 on the driver station
-        self.stick = XboxController(0)
+        self.stick = wpilib.XboxController(0)
         
         # start camera server
         wpilib.CameraServer.launch('vision.py:main')
@@ -57,32 +57,38 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
-            xAxis = self.stick.getLeftX() #Get joystick value
+            xAxis = self.stick.getRawAxis(0) #Get joystick value
             xAxis = self.normalize(xAxis, 0.1) #Set deadzone
             xAxis = self.joystickAdjust(xAxis, 0.5) #Adjust sensitivity
             
-            yAxis = self.stick.getLeftY()
+            yAxis = self.stick.getRawAxis(1)
             yAxis = self.normalize(yAxis, 0.1)
             yAxis = self.joystickAdjust(yAxis, 0.5)
             
-            rotation = self.stick.getRightX()
+            rotation = self.stick.getRawAxis(4)
             rotation = self.normalize(rotation, 0.1)
             rotation = self.joystickAdjust(rotation, 0.5)
+            
+            leftTrigger = self.stick.getRawAxis(2)
+            leftTrigger = self.normalize(leftTrigger, 0.05)
+            
+            rightTrigger = self.stick.getRawAxis(3)
+            rightTrigger = self.normalize(rightTrigger, 0.05)
             
             gyroAngle = 0
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
  
-            if self.stick.getLeftBumper() is True:
+            if self.stick.getBumper("left") is True:
                 self.winch.set(1)
             else:
                 self.winch.set(0)
                 
-            if self.stick.getLeftTrigger() is True:
+            if leftTrigger > 0:
                 self.intake.set(0.65)
             else:
                 self.intake.set(0)
                 
-            if self.stick.getRightTrigger() is True:
+            if rightTrigger > 0:
                 self.shooter.set(0.70387)
                 self.agitator.set(1)
                 self.loader.set(1)
@@ -91,19 +97,22 @@ class MyRobot(wpilib.IterativeRobot):
                 self.agitator.set(0)
                 self.loader.set(0)
 
-            if self.stick.getButtonY() is True:
-                self.stick.rumble(1, 1)
+            if self.stick.getYButton() is True:
+                self.stick.rightRumble = int(1 * 65535)
+                self.stick.leftRumble = int(1 * 65535)
             else:
-                self.stick.rumble(0, 0)
+                self.stick.rightRumble = int(0 * 65535)
+                self.stick.leftRumble = int(0 * 65535)
+                
             cameraSwitch = NetworkTables.getTable("Camera")
-            if self.stick.getRightBumper() is True:
+            if self.stick.getBumper("right") is True:
                 if self.rbToggle is 0:
                     self.rbToggle = 1
                 else:
                     self.rbToggle = 0
                 cameraSwitch.putNumber("switched", 1)
             else:
-                cameraSwitch.putNumber("switched",0)
+                cameraSwitch.putNumber("switched", 0)
             cameraSwitch.putNumber("cameraSwitch", self.rbToggle)
         except:
             if not self.isFmsAttached():
