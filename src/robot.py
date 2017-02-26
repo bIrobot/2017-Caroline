@@ -54,17 +54,7 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
         self.automodes.run()
-#         try:
-#             # Check if we've completed 100 loops (approximately 2 seconds)
-#             if self.auto_loop_counter < 100:
-#                 self.robot_drive.mecanumDrive_Cartesian(0, -0.1, 0, 0) # Drive forwards
-#                 self.auto_loop_counter += 1
-#             else:
-#                 self.robot_drive.mecanumDrive_Cartesian(0, 0, 0, 0)    #Stop robot
-#         except:
-#             if not self.isFmsAttached():
-#                 raise
-
+        
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
