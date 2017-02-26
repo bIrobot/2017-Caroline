@@ -6,7 +6,7 @@
 import wpilib
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
-from wpilib.joystick import Joystick
+# from wpilib.joystick import Joystick
 # from robotpy_ext.common_drivers import navx
 
 class MyRobot(wpilib.IterativeRobot):
