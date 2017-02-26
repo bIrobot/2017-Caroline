@@ -9,15 +9,23 @@
 #
 
 from cscore import CameraServer, UsbCamera
+from networktables import NetworkTables
+import time
 
 def main():
     cs = CameraServer.getInstance()
     cs.enableLogging()
-    
-    usb1 = cs.startAutomaticCapture(dev=0)
-    usb2 = cs.startAutomaticCapture(dev=1)
-    
-    cs.waitForever()
+    while True:
+        cameraSwitch = NetworkTables.getTable("Camera")
+        switchValue = cameraSwitch.getNumber("cameraSwitch", 0)
+        switched = cameraSwitch.getNumber("switched", 0)
+        
+        camera = cs.startAutomaticCapture(dev=switchValue)
+        camera.setResolution(640, 480)
+        
+        while switched is 0:
+            switched = cameraSwitch.getNumber("switched", 0)
+            time.sleep(0.01)
 
 if __name__ == '__main__':
     
@@ -26,7 +34,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     
     # You should uncomment these to connect to the RoboRIO
-    #import networktables
     #networktables.initialize(server='10.60.98.2')
     
     main()
