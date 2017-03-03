@@ -14,7 +14,7 @@ class DriveForward(StatefulAutonomous):
 
     @timed_state(duration=5, next_state='stop')
     def drive_forward(self):
-        self.robot_drive.mecanumDrive_Cartesian(0, -0.1, 0, 0) #Drive forwards
+        self.robot_drive.mecanumDrive_Cartesian(0, -0.5, 0, 0) #Drive forwards
         
     @state()
     def stop(self):
