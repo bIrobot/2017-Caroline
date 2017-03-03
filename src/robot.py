@@ -132,6 +132,9 @@ class MyRobot(wpilib.IterativeRobot):
         
 #         self.tm = wpilib.Timer()
 #         self.tm.start()
+
+        self.beforeButton = 0
+        self.afterButton = 0
         
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
@@ -209,12 +212,21 @@ class MyRobot(wpilib.IterativeRobot):
                 
             if rightTrigger > 0:
                 self.shooter.set(0.65387)
-                self.agitator.set(-1)
-                self.loader.set(1)
+                if self.afterButton > 10:
+                    self.agitator.set(1)
+                if self.afterButton > 10:
+                    self.loader.set(1)
+                self.beforeButton = 0
+                self.afterButton += 1
             else:
                 self.shooter.set(0)
-                self.agitator.set(0)
+                if self.beforeButton < 10:
+                    self.agitator.set(-1)
+                else:
+                    self.agitator.set(0)
                 self.loader.set(0)
+                self.afterButton = 0
+                self.beforeButton += 1
 
             if self.stick.getYButton() is True:
                 self.stick.rightRumble = int(1 * 65535)
