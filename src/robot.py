@@ -165,7 +165,6 @@ class MyRobot(wpilib.IterativeRobot):
 #             if self.tm.hasPeriodPassed(1.0):
 #                 print("NavX Gyro", self.ahrs.getYaw(), self.ahrs.getAngle())
 #             
-
 #             rotateToAngle = False
 #             if self.stick.getRawButton(10):
 #                 self.ahrs.reset()
