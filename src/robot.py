@@ -5,7 +5,7 @@
 
 import wpilib
 from networktables import NetworkTables
-# from robotpy_ext.common_drivers.navx import AHRS
+from robotpy_ext.common_drivers.navx import AHRS
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 if wpilib.RobotBase.isSimulation():
     pass
@@ -35,7 +35,7 @@ class MyRobot(wpilib.IterativeRobot):
 #         kI = 0.00
 #         kD = 0.00
 #         kF = 0.00
-#     
+#      
 #     kToleranceDegrees = 2.0
 #     
     def robotInit(self):
@@ -55,18 +55,18 @@ class MyRobot(wpilib.IterativeRobot):
 #         self.cameraTable = NetworkTables.getTable("Camera")
 
 
-        cs = CameraServer.getInstance()
-        cs.enableLogging()
-        self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
-        self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
-        self.camera1.setResolution(320, 240)
-        self.camera2.setResolution(320, 240)
-        self.camera1.setFPS(20)
-        self.camera2.setFPS(20)
-        cs.addCamera(self.camera1)
-        cs.addCamera(self.camera2)
-        self.server = cs.addServer(name="serve_USBCamera")
-        self.server.setSource(self.camera1)
+#         cs = CameraServer.getInstance()
+#         cs.enableLogging()
+#         self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
+#         self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
+#         self.camera1.setResolution(320, 240)
+#         self.camera2.setResolution(320, 240)
+#         self.camera1.setFPS(20)
+#         self.camera2.setFPS(20)
+#         cs.addCamera(self.camera1)
+#         cs.addCamera(self.camera2)
+#         self.server = cs.addServer(name="serve_USBCamera")
+#         self.server.setSource(self.camera2)
 
         
         # Channels for the wheels
@@ -97,16 +97,16 @@ class MyRobot(wpilib.IterativeRobot):
 #         #
 #         
 #         self.ahrs = AHRS.create_spi()
-#         #self.ahrs = AHRS.create_i2c()
-#         
+# #         #self.ahrs = AHRS.create_i2c()
+# #         
 #         turnController = wpilib.PIDController(self.kP, self.kI, self.kD, self.kF, self.ahrs, output=self)
 #         turnController.setInputRange(-180.0,  180.0)
 #         turnController.setOutputRange(-1.0, 1.0)
 #         turnController.setAbsoluteTolerance(self.kToleranceDegrees)
 #         turnController.setContinuous(True)
-#         
+#          
 #         self.turnController = turnController
-#         
+#          
 #         # Add the PID Controller to the Test-mode dashboard, allowing manual  */
 #         # tuning of the Turn Controller's P, I and D coefficients.            */
 #         # Typically, only the P value needs to be modified.                   */
@@ -116,6 +116,13 @@ class MyRobot(wpilib.IterativeRobot):
         
         self.components = {
             'robot_drive': self.robot_drive,
+            'PIDController': wpilib.PIDController,
+            'addActuator': wpilib.LiveWindow.addActuator
+#             'turnController': self.turnController,
+#             'rotateToAngleRate': self.rotateToAngleRate,
+#             'pidWrite': pidWrite(output),
+#             'ahrs': self.ahrs,
+            
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
         
@@ -201,12 +208,15 @@ class MyRobot(wpilib.IterativeRobot):
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
  
             if self.stick.getRawButton(5) is True: #left bumper
-                self.winch.set(1)
+                self.winch.set(-1)
             else:
                 self.winch.set(0)
                 
             if leftTrigger > 0:
-                self.intake.set(0.65)
+                if self.stick.getRawButton(1):
+                    self.intake.set(1)
+                else:
+                    self.intake.set(0.65)
             else:
                 self.intake.set(0)
                 
@@ -248,18 +258,24 @@ class MyRobot(wpilib.IterativeRobot):
 #             self.cameraTable.putNumber("whatCamera", self.cameraToggle)
 
 
-            if self.stick.getRawButton(4) is True:
-                if self.cameraToggle is 0:
-                    self.cameraToggle = 1
-                    self.driveToggle = -1
-                else:
-                    self.cameraToggle = 0
-                    self.driveToggle = 1
-                wpilib.Timer.delay(0.19)
-            if self.cameraToggle is 0:
-                self.server.setSource(self.camera1)
-            else:
-                self.server.setSource(self.camera2)
+
+
+
+#             if self.stick.getRawButton(4) is True:
+#                 if self.cameraToggle is 0:
+#                     self.cameraToggle = 1
+#                     self.driveToggle = -1
+#                 else:
+#                     self.cameraToggle = 0
+#                     self.driveToggle = 1
+#                 wpilib.Timer.delay(0.19)
+#             if self.cameraToggle is 0:
+#                 self.server.setSource(self.camera1)
+#             else:
+#                 self.server.setSource(self.camera2)
+            
+            
+            
             
             
 #             whatCamera = self.cameraTable.getNumber("whatCamera", 0)
@@ -296,11 +312,11 @@ class MyRobot(wpilib.IterativeRobot):
         adjustedValues = constant * (input**3) + (1 - constant) * input
         return adjustedValues
     
-#     def pidWrite(self, output):
-#         """This function is invoked periodically by the PID Controller,
-#         based upon navX MXP yaw angle input and PID Coefficients.
-#         """
-#         self.rotateToAngleRate = output
+    def pidWrite(self, output):
+        """This function is invoked periodically by the PID Controller,
+        based upon navX MXP yaw angle input and PID Coefficients.
+        """
+        self.rotateToAngleRate = output
         
 if __name__ == "__main__":
     wpilib.run(MyRobot)
