@@ -6,6 +6,7 @@
 import wpilib
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
+from hal.functions import isSimulation
 if wpilib.RobotBase.isSimulation():
     pass
 else:
@@ -57,12 +58,10 @@ class MyRobot(wpilib.IterativeRobot):
         self.winch = wpilib.Spark(7)
         self.agitator = wpilib.Spark(8)
         
-        
         self.components = {
             'robot_drive': self.robot_drive,
             'PIDController': wpilib.PIDController,
             'addActuator': wpilib.LiveWindow.addActuator
-            
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
         

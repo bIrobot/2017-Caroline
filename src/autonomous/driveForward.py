@@ -14,18 +14,11 @@ class DriveForward(StatefulAutonomous):
     # Often, you will find it useful to have different parameters in
     # simulation than what you use on the real robot
      
-    if wpilib.RobotBase.isSimulation():
-        # These PID parameters are used in simulation
-        kP = 0.06
-        kI = 0.00
-        kD = 0.00
-        kF = 0.00
-    else:
-        # These PID parameters are used on a real robot
-        kP = 0.03 #needs to be smaller
-        kI = 0.00 #need to set something
-        kD = 0.00 #don't know if we should use it
-        kF = 0.00
+    # These PID parameters are used on a real robot
+    kP = 0.03 #needs to be smaller
+    kI = 0.00 #need to set something
+    kD = 0.00 #don't know if we should use it
+    kF = 0.00
     
     kToleranceDegrees = 2.0
     
