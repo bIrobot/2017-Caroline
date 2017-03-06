@@ -5,7 +5,7 @@
 
 import wpilib
 from networktables import NetworkTables
-from robotpy_ext.common_drivers.navx import AHRS
+# from robotpy_ext.common_drivers.navx import AHRS
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 if wpilib.RobotBase.isSimulation():
     pass
@@ -89,7 +89,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.winch = wpilib.Spark(7)
         self.agitator = wpilib.Spark(8)
         
-#         ############################################################################
+#         ###########################################################################
 #         
 #         # Communicate w/navX MXP via the MXP SPI Bus.
 #         # - Alternatively, use the i2c bus.
@@ -221,17 +221,20 @@ class MyRobot(wpilib.IterativeRobot):
                 self.intake.set(0)
                 
             if rightTrigger > 0:
-                self.shooter.set(0.65387)
-                if self.afterButton > 10:
-                    self.agitator.set(1)
-                if self.afterButton > 10:
+                if self.stick.getRawButton(1):
+                    self.shooter.set(1)
+                else:
+                    self.shooter.set(0.62)
+                if self.afterButton > 20:
+                    self.agitator.set(-1)
+                if self.afterButton > 50:
                     self.loader.set(1)
                 self.beforeButton = 0
                 self.afterButton += 1
             else:
                 self.shooter.set(0)
                 if self.beforeButton < 10:
-                    self.agitator.set(-1)
+                    self.agitator.set(1)
                 else:
                     self.agitator.set(0)
                 self.loader.set(0)
@@ -312,11 +315,11 @@ class MyRobot(wpilib.IterativeRobot):
         adjustedValues = constant * (input**3) + (1 - constant) * input
         return adjustedValues
     
-    def pidWrite(self, output):
-        """This function is invoked periodically by the PID Controller,
-        based upon navX MXP yaw angle input and PID Coefficients.
-        """
-        self.rotateToAngleRate = output
+#     def pidWrite(self, output):
+#         """This function is invoked periodically by the PID Controller,
+#         based upon navX MXP yaw angle input and PID Coefficients.
+#         """
+#         self.rotateToAngleRate = output
         
 if __name__ == "__main__":
     wpilib.run(MyRobot)
