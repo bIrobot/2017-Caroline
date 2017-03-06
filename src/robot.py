@@ -47,13 +47,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.stick = wpilib.XboxController(0)
         self.cameraToggle = 0
         self.driveToggle = 1
-        
-#         # start camera server
-#         wpilib.CameraServer.launch('vision.py:main')
-#         
-#         # networktable stuff
-#         self.cameraTable = NetworkTables.getTable("Camera")
-
 
 #         cs = CameraServer.getInstance()
 #         cs.enableLogging()
@@ -247,22 +240,6 @@ class MyRobot(wpilib.IterativeRobot):
             else:
                 self.stick.rightRumble = int(0 * 65535)
                 self.stick.leftRumble = int(0 * 65535)
-                
-#             if self.stick.getRawButton(4) is True: #Y button
-#                 if self.cameraToggle is 0:
-#                     self.cameraToggle = 1
-#                     self.driveToggle = -1
-#                 else:
-#                     self.cameraToggle = 0
-#                     self.driveToggle = 1
-#                 self.cameraTable.putNumber("switched", 1)
-#             else:
-#                 self.cameraTable.putNumber("switched", 0)
-#             self.cameraTable.putNumber("whatCamera", self.cameraToggle)
-
-
-
-
 
 #             if self.stick.getRawButton(4) is True:
 #                 if self.cameraToggle is 0:
