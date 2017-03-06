@@ -276,15 +276,6 @@ class MyRobot(wpilib.IterativeRobot):
 #                 self.server.setSource(self.camera1)
 #             else:
 #                 self.server.setSource(self.camera2)
-            
-            
-            
-            
-            
-#             whatCamera = self.cameraTable.getNumber("whatCamera", 0)
-#             switched = self.cameraTable.getNumber("switched", 0)
-#             print(whatCamera)
-#             print(switched)
         except:
             if not self.isFmsAttached():
                 raise
