@@ -4,16 +4,34 @@ from robotpy_ext.common_drivers.navx import AHRS
 class DriveForward(StatefulAutonomous):
     MODE_NAME = 'Drive Forward'
     DEFAULT = True
-
-    # These PID parameters are used on a real robot
-    kP = 0.03
-    kI = 0.00
-    kD = 0.00
-    kF = 0.00
+    
+    # The following PID Controller coefficients will need to be tuned */
+    # to match the dynamics of your drive system.  Note that the      */
+    # SmartDashboard in Test mode has support for helping you tune    */
+    # controllers by displaying a form where you can enter new P, I,  */
+    # and D constants and test the mechanism.                         */
+     
+    # Often, you will find it useful to have different parameters in
+    # simulation than what you use on the real robot
+     
+    if wpilib.RobotBase.isSimulation():
+        # These PID parameters are used in simulation
+        kP = 0.06
+        kI = 0.00
+        kD = 0.00
+        kF = 0.00
+    else:
+        # These PID parameters are used on a real robot
+        kP = 0.03
+        kI = 0.00
+        kD = 0.00
+        kF = 0.00
     
     kToleranceDegrees = 1.0
+    
     def initialize(self):
         
+        # Communicate w/navX MXP via the MXP SPI Bus.
         self.ahrs = AHRS.create_spi()
          
         turnController = self.PIDController(self.kP, self.kI, self.kD, self.kF, self.ahrs, output=self)
@@ -24,6 +42,9 @@ class DriveForward(StatefulAutonomous):
          
         self.turnController = turnController
         
+        # Add the PID Controller to the Test-mode dashboard, allowing manual  */
+        # tuning of the Turn Controller's P, I and D coefficients.            */
+        # Typically, only the P value needs to be modified.                   */
         self.addActuator("DriveSystem", "RotateController", turnController)
         
         self.ahrs.reset()

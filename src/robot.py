@@ -14,30 +14,6 @@ else:
     import cscore
 
 class MyRobot(wpilib.IterativeRobot):
-#     # The following PID Controller coefficients will need to be tuned */
-#     # to match the dynamics of your drive system.  Note that the      */
-#     # SmartDashboard in Test mode has support for helping you tune    */
-#     # controllers by displaying a form where you can enter new P, I,  */
-#     # and D constants and test the mechanism.                         */
-#     
-#     # Often, you will find it useful to have different parameters in
-#     # simulation than what you use on the real robot
-#     
-#     if wpilib.RobotBase.isSimulation():
-#         # These PID parameters are used in simulation
-#         kP = 0.06
-#         kI = 0.00
-#         kD = 0.00
-#         kF = 0.00
-#     else:
-#         # These PID parameters are used on a real robot
-#         kP = 0.03
-#         kI = 0.00
-#         kD = 0.00
-#         kF = 0.00
-#      
-#     kToleranceDegrees = 2.0
-#     
     def robotInit(self):
         """
         This function is called upon program startup and
@@ -82,39 +58,11 @@ class MyRobot(wpilib.IterativeRobot):
         self.winch = wpilib.Spark(7)
         self.agitator = wpilib.Spark(8)
         
-#         ###########################################################################
-#         
-#         # Communicate w/navX MXP via the MXP SPI Bus.
-#         # - Alternatively, use the i2c bus.
-#         # See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details
-#         #
-#         
-#         self.ahrs = AHRS.create_spi()
-# #         #self.ahrs = AHRS.create_i2c()
-# #         
-#         turnController = wpilib.PIDController(self.kP, self.kI, self.kD, self.kF, self.ahrs, output=self)
-#         turnController.setInputRange(-180.0,  180.0)
-#         turnController.setOutputRange(-1.0, 1.0)
-#         turnController.setAbsoluteTolerance(self.kToleranceDegrees)
-#         turnController.setContinuous(True)
-#          
-#         self.turnController = turnController
-#          
-#         # Add the PID Controller to the Test-mode dashboard, allowing manual  */
-#         # tuning of the Turn Controller's P, I and D coefficients.            */
-#         # Typically, only the P value needs to be modified.                   */
-#         wpilib.LiveWindow.addActuator("DriveSystem", "RotateController", turnController)
-#         
-#         ####################################################################
         
         self.components = {
             'robot_drive': self.robot_drive,
             'PIDController': wpilib.PIDController,
             'addActuator': wpilib.LiveWindow.addActuator
-#             'turnController': self.turnController,
-#             'rotateToAngleRate': self.rotateToAngleRate,
-#             'pidWrite': pidWrite(output),
-#             'ahrs': self.ahrs,
             
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
@@ -153,7 +101,6 @@ class MyRobot(wpilib.IterativeRobot):
             rotation = self.normalize(rotation, 0.1)
             rotation = self.joystickAdjust(rotation, 0.5)
             
-#             gyroAngle = self.ahrs.getAngle()
             gyroAngle = 0
             
             leftTrigger = self.stick.getRawAxis(2)
