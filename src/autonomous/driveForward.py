@@ -22,12 +22,12 @@ class DriveForward(StatefulAutonomous):
         kF = 0.00
     else:
         # These PID parameters are used on a real robot
-        kP = 0.03
-        kI = 0.00
-        kD = 0.00
+        kP = 0.03 #needs to be smaller
+        kI = 0.00 #need to set something
+        kD = 0.00 #don't know if we should use it
         kF = 0.00
     
-    kToleranceDegrees = 1.0
+    kToleranceDegrees = 2.0
     
     def initialize(self):
         
@@ -62,6 +62,7 @@ class DriveForward(StatefulAutonomous):
         gyroAngle = self.ahrs.getAngle()
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, rotation*-1, gyroAngle) #Drive forwards and straight (hopefully)
 #         print("NavX Gyro", self.ahrs.getYaw(), self.ahrs.getAngle())
+
     @state()
     def stop(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0, 0, 0) #Stop robot

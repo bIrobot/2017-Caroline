@@ -5,7 +5,6 @@
 
 import wpilib
 from networktables import NetworkTables
-# from robotpy_ext.common_drivers.navx import AHRS
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 if wpilib.RobotBase.isSimulation():
     pass
@@ -78,9 +77,6 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopInit(self):
         wpilib.IterativeRobot.teleopInit(self)
         
-#         self.tm = wpilib.Timer()
-#         self.tm.start()
-
         self.beforeButton = 0
         self.afterButton = 0
         
@@ -108,42 +104,6 @@ class MyRobot(wpilib.IterativeRobot):
             
             rightTrigger = self.stick.getRawAxis(3)
             rightTrigger = self.normalize(rightTrigger, 0.05)
-            
-            
-            
-        
-#             if self.tm.hasPeriodPassed(1.0):
-#                 print("NavX Gyro", self.ahrs.getYaw(), self.ahrs.getAngle())
-#             
-#             rotateToAngle = False
-#             if self.stick.getRawButton(10):
-#                 self.ahrs.reset()
-#          
-   
-#             if self.stick.getRawButton(1):
-#                 self.turnController.setSetpoint(0.0)
-#                 rotateToAngle = True
-#             elif self.stick.getRawButton(2):
-#                 self.turnController.setSetpoint(90.0)
-#                 rotateToAngle = True
-#             elif self.stick.getRawButton(3):
-#                 self.turnController.setSetpoint(179.9)
-#                 rotateToAngle = True
-#             elif self.stick.getRawButton(4):
-#                 self.turnController.setSetpoint(-90.0)
-#                 rotateToAngle = True
-#             
-#             if rotateToAngle:
-#                 self.turnController.enable()
-#                 rotation = self.rotateToAngleRate
-#             else:
-#                 self.turnController.disable()
-#                 rotation = rotation
-#             
-#             # Use the joystick X axis for lateral movement,
-#             # Y axis for forward movement, and the current
-#             # calculated rotation rate (or joystick Z axis),
-#             # depending upon whether "rotate to angle" is active.
 
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
  
@@ -229,12 +189,5 @@ class MyRobot(wpilib.IterativeRobot):
         """Input should be between -1 and 1, constant should be between 0 and 1."""
         adjustedValues = constant * (input**3) + (1 - constant) * input
         return adjustedValues
-    
-#     def pidWrite(self, output):
-#         """This function is invoked periodically by the PID Controller,
-#         based upon navX MXP yaw angle input and PID Coefficients.
-#         """
-#         self.rotateToAngleRate = output
-        
 if __name__ == "__main__":
     wpilib.run(MyRobot)
