@@ -6,12 +6,14 @@
 import wpilib
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
-from hal.functions import isSimulation
-if wpilib.RobotBase.isSimulation():
-    pass
-else:
-    from cscore import CameraServer, UsbCamera
-    import cscore
+from robotpy_ext.common_drivers.navx import AHRS
+
+# from hal.functions import isSimulation
+# if wpilib.RobotBase.isSimulation():
+#     pass
+# else:
+#     from cscore import CameraServer, UsbCamera
+#     import cscore
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -19,10 +21,13 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         is used for initialization code.
         """
+        self.ahrs = AHRS.create_spi(update_rate_hz=200)
+        
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
         self.cameraToggle = 0
         self.driveToggle = 1
+        self.FODtoggle = 0
 
 #         cs = CameraServer.getInstance()
 #         cs.enableLogging()
@@ -36,7 +41,6 @@ class MyRobot(wpilib.IterativeRobot):
 #         cs.addCamera(self.camera2)
 #         self.server = cs.addServer(name="serve_USBCamera")
 #         self.server.setSource(self.camera2)
-
         
         # Channels for the wheels
         frontLeftChannel    = 0
@@ -47,9 +51,11 @@ class MyRobot(wpilib.IterativeRobot):
         # object that handles basic drive operations
         self.robot_drive = wpilib.RobotDrive(frontLeftChannel, rearLeftChannel,
                                          frontRightChannel, rearRightChannel)
+        self.robot_drive.setExpiration(0.2)
+        
+        # invert motors
         self.robot_drive.setInvertedMotor(0, True)
         self.robot_drive.setInvertedMotor(2, True)
-        self.robot_drive.setExpiration(0.2)
 
         # initialize motors other than drive
         self.loader = wpilib.Spark(4)
@@ -58,17 +64,23 @@ class MyRobot(wpilib.IterativeRobot):
         self.winch = wpilib.Spark(7)
         self.agitator = wpilib.Spark(8)
         
+        # objects that get passed to the autonomous modes
         self.components = {
             'robot_drive': self.robot_drive,
+            'ahrs': self.ahrs,
             'PIDController': wpilib.PIDController,
             'addActuator': wpilib.LiveWindow.addActuator
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
         
+        # live editable motor speed values used by the bang bang controller during autonomous
+        sd = NetworkTables.getTable("SmartDashboard")
+        sd.putNumber('slowSpeed', 0.07)
+        sd.putNumber('fastSpeed', 0.2)
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-
+        # self.ahrs.free()
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
         self.automodes.run()
@@ -76,9 +88,14 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopInit(self):
         wpilib.IterativeRobot.teleopInit(self)
         
+        # initialize variables used by teleopPeriodic for timing of motors
         self.beforeButton = 0
         self.afterButton = 0
         
+        self.ahrs.reset()
+        
+        # set field oriented drive as disabled to begin with
+        self.gyroAngle = 0
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
@@ -96,16 +113,19 @@ class MyRobot(wpilib.IterativeRobot):
             rotation = self.normalize(rotation, 0.1)
             rotation = self.joystickAdjust(rotation, 0.5)
             
-            gyroAngle = 0
-            
             leftTrigger = self.stick.getRawAxis(2)
             leftTrigger = self.normalize(leftTrigger, 0.05)
             
             rightTrigger = self.stick.getRawAxis(3)
             rightTrigger = self.normalize(rightTrigger, 0.05)
 
-            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, gyroAngle)
- 
+            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, self.gyroAngle)
+#             wpilib.Timer.delay(0.005)
+        except:
+            if not self.isFmsAttached():
+                raise
+            
+        try:
             if self.stick.getRawButton(5) is True: #left bumper
                 self.winch.set(-1)
             else:
@@ -146,7 +166,40 @@ class MyRobot(wpilib.IterativeRobot):
             else:
                 self.stick.rightRumble = int(0 * 65535)
                 self.stick.leftRumble = int(0 * 65535)
-
+        except:
+            if not self.isFmsAttached():
+                raise
+            
+        try:
+            if self.stick.getRawButton(6) is True:
+                if self.FODtoggle is 0:
+                    self.FODtoggle = 1
+                else:
+                    self.FODtoggle = 0
+                    self.ahrs.reset()
+                wpilib.Timer.delay(0.19)
+            if self.FODtoggle is 0:
+                self.gyroAngle = self.ahrs.getAngle()
+#                 self.gyroAngle = 0
+            else:
+                self.gyroAngle = 0
+                if self.stick.getRawButton(4) is True:
+                    if self.cameraToggle is 0:
+                        self.cameraToggle = 1
+                        self.driveToggle = -1
+                    else:
+                        self.cameraToggle = 0
+                        self.driveToggle = 1
+                    wpilib.Timer.delay(0.19)
+#                 if self.cameraToggle is 0:
+#                     self.server.setSource(self.camera1)
+#                 else:
+#                     self.server.setSource(self.camera2)
+        except:
+            if not self.isFmsAttached():
+                raise
+            
+#         try:
 #             if self.stick.getRawButton(4) is True:
 #                 if self.cameraToggle is 0:
 #                     self.cameraToggle = 1
@@ -159,9 +212,9 @@ class MyRobot(wpilib.IterativeRobot):
 #                 self.server.setSource(self.camera1)
 #             else:
 #                 self.server.setSource(self.camera2)
-        except:
-            if not self.isFmsAttached():
-                raise
+#         except:
+#             if not self.isFmsAttached():
+#                 raise
     def testPeriodic(self):
         """This function is called periodically during test mode."""
         wpilib.LiveWindow.run()
