@@ -7,7 +7,6 @@ import wpilib
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from robotpy_ext.common_drivers.navx import AHRS
-
 # from hal.functions import isSimulation
 # if wpilib.RobotBase.isSimulation():
 #     pass
@@ -66,9 +65,8 @@ class MyRobot(wpilib.IterativeRobot):
         
         # objects that get passed to the autonomous modes
         self.components = {
-            'robot_drive': self.robot_drive,
             'ahrs': self.ahrs,
-            'PIDController': wpilib.PIDController,
+            'robot_drive': self.robot_drive,
             'addActuator': wpilib.LiveWindow.addActuator
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
@@ -80,7 +78,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-        # self.ahrs.free()
+        
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
         self.automodes.run()
@@ -95,9 +93,35 @@ class MyRobot(wpilib.IterativeRobot):
         self.ahrs.reset()
         
         # set field oriented drive as disabled to begin with
-        self.gyroAngle = 0
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
+        try:
+            if self.stick.getRawButton(6) is True:
+                if self.FODtoggle is 0:
+                    self.FODtoggle = 1
+                else:
+                    self.FODtoggle = 0
+                    self.ahrs.reset()
+                wpilib.Timer.delay(0.19)
+            if self.FODtoggle is 0:
+                self.gyroAngle = self.ahrs.getAngle()
+            else:
+                self.gyroAngle = 0
+                if self.stick.getRawButton(4) is True:
+                    if self.cameraToggle is 0:
+                        self.cameraToggle = 1
+                        self.driveToggle = -1
+                    else:
+                        self.cameraToggle = 0
+                        self.driveToggle = 1
+                    wpilib.Timer.delay(0.19)
+#                 if self.cameraToggle is 0:
+#                     self.server.setSource(self.camera1)
+#                 else:
+#                     self.server.setSource(self.camera2)
+        except:
+            if not self.isFmsAttached():
+                raise
         try:
             xAxis = self.stick.getRawAxis(0) #Get joystick value
             xAxis = self.normalize(xAxis, 0.1) #Set deadzone
@@ -170,35 +194,6 @@ class MyRobot(wpilib.IterativeRobot):
             if not self.isFmsAttached():
                 raise
             
-        try:
-            if self.stick.getRawButton(6) is True:
-                if self.FODtoggle is 0:
-                    self.FODtoggle = 1
-                else:
-                    self.FODtoggle = 0
-                    self.ahrs.reset()
-                wpilib.Timer.delay(0.19)
-            if self.FODtoggle is 0:
-                self.gyroAngle = self.ahrs.getAngle()
-#                 self.gyroAngle = 0
-            else:
-                self.gyroAngle = 0
-                if self.stick.getRawButton(4) is True:
-                    if self.cameraToggle is 0:
-                        self.cameraToggle = 1
-                        self.driveToggle = -1
-                    else:
-                        self.cameraToggle = 0
-                        self.driveToggle = 1
-                    wpilib.Timer.delay(0.19)
-#                 if self.cameraToggle is 0:
-#                     self.server.setSource(self.camera1)
-#                 else:
-#                     self.server.setSource(self.camera2)
-        except:
-            if not self.isFmsAttached():
-                raise
-            
 #         try:
 #             if self.stick.getRawButton(4) is True:
 #                 if self.cameraToggle is 0:
@@ -241,5 +236,6 @@ class MyRobot(wpilib.IterativeRobot):
         """Input should be between -1 and 1, constant should be between 0 and 1."""
         adjustedValues = constant * (input**3) + (1 - constant) * input
         return adjustedValues
+    
 if __name__ == "__main__":
     wpilib.run(MyRobot)
