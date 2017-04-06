@@ -7,12 +7,12 @@ import wpilib
 from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from robotpy_ext.common_drivers.navx import AHRS
-# from hal.functions import isSimulation
-# if wpilib.RobotBase.isSimulation():
-#     pass
-# else:
-#     from cscore import CameraServer, UsbCamera
-#     import cscore
+from hal.functions import isSimulation
+if wpilib.RobotBase.isSimulation():
+    pass
+else:
+    from cscore import CameraServer, UsbCamera
+    import cscore
 
 class MyRobot(wpilib.IterativeRobot):
     def robotInit(self):
@@ -24,22 +24,19 @@ class MyRobot(wpilib.IterativeRobot):
         
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
-        self.cameraToggle = 0
-        self.driveToggle = 1
-        self.FODtoggle = 0
 
-#         cs = CameraServer.getInstance()
-#         cs.enableLogging()
-#         self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
-#         self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
-#         self.camera1.setResolution(320, 240)
-#         self.camera2.setResolution(320, 240)
-#         self.camera1.setFPS(20)
-#         self.camera2.setFPS(20)
-#         cs.addCamera(self.camera1)
-#         cs.addCamera(self.camera2)
-#         self.server = cs.addServer(name="serve_USBCamera")
-#         self.server.setSource(self.camera2)
+        cs = CameraServer.getInstance()
+        cs.enableLogging()
+        self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
+        self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
+        self.camera1.setResolution(320, 240)
+        self.camera2.setResolution(320, 240)
+        self.camera1.setFPS(20)
+        self.camera2.setFPS(20)
+        cs.addCamera(self.camera1)
+        cs.addCamera(self.camera2)
+        self.server = cs.addServer(name="serve_USBCamera")
+        self.server.setSource(self.camera2)
         
         # Channels for the wheels
         frontLeftChannel    = 0
@@ -73,7 +70,7 @@ class MyRobot(wpilib.IterativeRobot):
         
         # live editable motor speed values used by the bang bang controller during autonomous
         sd = NetworkTables.getTable("SmartDashboard")
-        sd.putNumber('slowSpeed', 0.07)
+        sd.putNumber('slowSpeed', 0.07) # set default values
         sd.putNumber('fastSpeed', 0.2)
 
     def autonomousInit(self):
@@ -86,17 +83,22 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopInit(self):
         wpilib.IterativeRobot.teleopInit(self)
         
+        # reset the navx
+        self.ahrs.reset()
+        
+        # initialize variables used by teleopPeriodic for various toggles
+        self.cameraToggle = 0
+        self.driveToggle = 1
+        self.FODtoggle = 0
+        
         # initialize variables used by teleopPeriodic for timing of motors
         self.beforeButton = 0
         self.afterButton = 0
         
-        self.ahrs.reset()
-        
-        # set field oriented drive as disabled to begin with
     def teleopPeriodic(self):
         """This function is called periodically during operator control."""
         try:
-            if self.stick.getRawButton(6) is True:
+            if self.stick.getRawButton(6) is True: # right bumber
                 if self.FODtoggle is 0:
                     self.FODtoggle = 1
                 else:
@@ -107,7 +109,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.gyroAngle = self.ahrs.getAngle()
             else:
                 self.gyroAngle = 0
-                if self.stick.getRawButton(4) is True:
+                if self.stick.getRawButton(4) is True: # Y button
                     if self.cameraToggle is 0:
                         self.cameraToggle = 1
                         self.driveToggle = -1
@@ -115,17 +117,17 @@ class MyRobot(wpilib.IterativeRobot):
                         self.cameraToggle = 0
                         self.driveToggle = 1
                     wpilib.Timer.delay(0.19)
-#                 if self.cameraToggle is 0:
-#                     self.server.setSource(self.camera1)
-#                 else:
-#                     self.server.setSource(self.camera2)
+                if self.cameraToggle is 0:
+                    self.server.setSource(self.camera1)
+                else:
+                    self.server.setSource(self.camera2)
         except:
             if not self.isFmsAttached():
                 raise
         try:
-            xAxis = self.stick.getRawAxis(0) #Get joystick value
-            xAxis = self.normalize(xAxis, 0.1) #Set deadzone
-            xAxis = self.joystickAdjust(xAxis, 0.5) #Adjust sensitivity
+            xAxis = self.stick.getRawAxis(0) # Get joystick value
+            xAxis = self.normalize(xAxis, 0.1) # Set deadzone
+            xAxis = self.joystickAdjust(xAxis, 0.5) # Adjust sensitivity
             xAxis = xAxis * self.driveToggle
             
             yAxis = self.stick.getRawAxis(1)
@@ -133,7 +135,7 @@ class MyRobot(wpilib.IterativeRobot):
             yAxis = self.joystickAdjust(yAxis, 0.5)
             yAxis = yAxis * self.driveToggle
             
-            rotation = self.stick.getRawAxis(4)
+            rotation = self.stick.getRawAxis(4) # x axis right joystick
             rotation = self.normalize(rotation, 0.1)
             rotation = self.joystickAdjust(rotation, 0.5)
             
@@ -143,12 +145,12 @@ class MyRobot(wpilib.IterativeRobot):
             rightTrigger = self.stick.getRawAxis(3)
             rightTrigger = self.normalize(rightTrigger, 0.05)
 
+            # send motor values to drive function
             self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, self.gyroAngle)
 #             wpilib.Timer.delay(0.005)
         except:
             if not self.isFmsAttached():
                 raise
-            
         try:
             if self.stick.getRawButton(5) is True: #left bumper
                 self.winch.set(-1)
@@ -156,7 +158,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.winch.set(0)
                 
             if leftTrigger > 0:
-                if self.stick.getRawButton(1):
+                if self.stick.getRawButton(1): # A button
                     self.intake.set(1)
                 else:
                     self.intake.set(0.65)
@@ -164,7 +166,7 @@ class MyRobot(wpilib.IterativeRobot):
                 self.intake.set(0)
                 
             if rightTrigger > 0:
-                if self.stick.getRawButton(1):
+                if self.stick.getRawButton(1): # A button
                     self.shooter.set(1)
                 else:
                     self.shooter.set(0.62)
@@ -184,12 +186,12 @@ class MyRobot(wpilib.IterativeRobot):
                 self.afterButton = 0
                 self.beforeButton += 1
 
-            if self.stick.getYButton() is True:
-                self.stick.rightRumble = int(1 * 65535)
-                self.stick.leftRumble = int(1 * 65535)
-            else:
-                self.stick.rightRumble = int(0 * 65535)
-                self.stick.leftRumble = int(0 * 65535)
+#             if self.stick.getYButton() is True:
+#                 self.stick.rightRumble = int(1 * 65535)
+#                 self.stick.leftRumble = int(1 * 65535)
+#             else:
+#                 self.stick.rightRumble = int(0 * 65535)
+#                 self.stick.leftRumble = int(0 * 65535)
         except:
             if not self.isFmsAttached():
                 raise
