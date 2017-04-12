@@ -8,7 +8,8 @@ from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from robotpy_ext.common_drivers.navx import AHRS
 from hal.functions import isSimulation
-if wpilib.RobotBase.isSimulation():
+isSimulation = wpilib.RobotBase.isSimulation()
+if isSimulation:
     pass
 else:
     from cscore import CameraServer, UsbCamera
@@ -24,19 +25,22 @@ class MyRobot(wpilib.IterativeRobot):
         
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
-
-        cs = CameraServer.getInstance()
-        cs.enableLogging()
-        self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
-        self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
-        self.camera1.setResolution(320, 240)
-        self.camera2.setResolution(320, 240)
-        self.camera1.setFPS(20)
-        self.camera2.setFPS(20)
-        cs.addCamera(self.camera1)
-        cs.addCamera(self.camera2)
-        self.server = cs.addServer(name="serve_USBCamera")
-        self.server.setSource(self.camera2)
+        
+        if isSimulation:
+            pass
+        else:
+            cs = CameraServer.getInstance()
+            cs.enableLogging()
+            self.camera1 = cscore.UsbCamera("USB Camera 0", 0)
+            self.camera2 = cscore.UsbCamera("USB Camera 1", 1)
+            self.camera1.setResolution(320, 240)
+            self.camera2.setResolution(320, 240)
+            self.camera1.setFPS(20)
+            self.camera2.setFPS(20)
+            cs.addCamera(self.camera1)
+            cs.addCamera(self.camera2)
+            self.server = cs.addServer(name="serve_USBCamera")
+            self.server.setSource(self.camera2)
         
         # Channels for the wheels
         frontLeftChannel    = 0
@@ -92,7 +96,7 @@ class MyRobot(wpilib.IterativeRobot):
         # initialize variables used by teleopPeriodic for various toggles
         self.cameraToggle = 0
         self.driveToggle = 1
-        self.FODtoggle = 0
+        self.FODtoggle = 1 # don't start in FOD drive
         
         # initialize variables used by teleopPeriodic for timing of motors
         self.beforeButton = 0
@@ -106,8 +110,12 @@ class MyRobot(wpilib.IterativeRobot):
                     self.FODtoggle = 1
                 else:
                     self.FODtoggle = 0
-                    self.ahrs.reset()
+#                     self.ahrs.reset()
+                self.stick.rightRumble = int(1 * 65535)
+                self.stick.leftRumble = int(1 * 65535)
                 wpilib.Timer.delay(0.19)
+                self.stick.rightRumble = int(0 * 65535)
+                self.stick.leftRumble = int(0 * 65535)
             if self.FODtoggle is 0:
                 self.gyroAngle = self.ahrs.getAngle()
                 if self.stick.getRawButton(4) is True: # Y button
@@ -126,10 +134,13 @@ class MyRobot(wpilib.IterativeRobot):
                         self.cameraToggle = 0
                         self.driveToggle = 1
                     wpilib.Timer.delay(0.2)
-            if self.cameraToggle is 0:
-                self.server.setSource(self.camera1)
+            if isSimulation:
+                pass
             else:
-                self.server.setSource(self.camera2)
+                if self.cameraToggle is 0:
+                    self.server.setSource(self.camera1)
+                else:
+                    self.server.setSource(self.camera2)
         except:
             if not self.isFmsAttached():
                 raise
@@ -155,7 +166,7 @@ class MyRobot(wpilib.IterativeRobot):
             rightTrigger = self.normalize(rightTrigger, 0.05)
 
             # send motor values to drive function
-            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, self.gyroAngle)
+            self.robot_drive.mecanumDrive_Cartesian(xAxis, yAxis, rotation, self.gyroAngle + 180)
 #             wpilib.Timer.delay(0.005)
         except:
             if not self.isFmsAttached():
@@ -195,32 +206,10 @@ class MyRobot(wpilib.IterativeRobot):
                 self.afterButton = 0
                 self.beforeButton += 1
 
-#             if self.stick.getYButton() is True:
-#                 self.stick.rightRumble = int(1 * 65535)
-#                 self.stick.leftRumble = int(1 * 65535)
-#             else:
-#                 self.stick.rightRumble = int(0 * 65535)
-#                 self.stick.leftRumble = int(0 * 65535)
         except:
             if not self.isFmsAttached():
                 raise
-            
-#         try:
-#             if self.stick.getRawButton(4) is True:
-#                 if self.cameraToggle is 0:
-#                     self.cameraToggle = 1
-#                     self.driveToggle = -1
-#                 else:
-#                     self.cameraToggle = 0
-#                     self.driveToggle = 1
-#                 wpilib.Timer.delay(0.19)
-#             if self.cameraToggle is 0:
-#                 self.server.setSource(self.camera1)
-#             else:
-#                 self.server.setSource(self.camera2)
-#         except:
-#             if not self.isFmsAttached():
-#                 raise
+
     def testPeriodic(self):
         """This function is called periodically during test mode."""
         wpilib.LiveWindow.run()
