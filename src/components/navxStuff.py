@@ -1,4 +1,4 @@
-from robotpy_ext.common_drivers.navx import AHRS
+# from robotpy_ext.common_drivers.navx import AHRS
 from networktables import NetworkTables
 
 class Navx():

@@ -20,7 +20,7 @@ class MyRobot(wpilib.IterativeRobot):
         This function is called upon program startup and
         is used for initialization code.
         """
-        self.ahrs = AHRS.create_spi(update_rate_hz=200)
+        self.ahrs = AHRS.create_spi(update_rate_hz=100)
         
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
@@ -47,7 +47,7 @@ class MyRobot(wpilib.IterativeRobot):
         # object that handles basic drive operations
         self.robot_drive = wpilib.RobotDrive(frontLeftChannel, rearLeftChannel,
                                          frontRightChannel, rearRightChannel)
-        self.robot_drive.setExpiration(0.2)
+        self.robot_drive.setExpiration(0.25)
         
         # invert motors
         self.robot_drive.setInvertedMotor(0, True)
@@ -64,6 +64,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.components = {
             'ahrs': self.ahrs,
             'robot_drive': self.robot_drive,
+            'loader': self.loader,
+            'shooter': self.shooter,
+            'agitator': self.agitator,
             'addActuator': wpilib.LiveWindow.addActuator
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
@@ -107,6 +110,12 @@ class MyRobot(wpilib.IterativeRobot):
                 wpilib.Timer.delay(0.19)
             if self.FODtoggle is 0:
                 self.gyroAngle = self.ahrs.getAngle()
+                if self.stick.getRawButton(4) is True: # Y button
+                    if self.cameraToggle is 0:
+                        self.cameraToggle = 1
+                    else:
+                        self.cameraToggle = 0
+                    wpilib.Timer.delay(0.2)
             else:
                 self.gyroAngle = 0
                 if self.stick.getRawButton(4) is True: # Y button
@@ -116,11 +125,11 @@ class MyRobot(wpilib.IterativeRobot):
                     else:
                         self.cameraToggle = 0
                         self.driveToggle = 1
-                    wpilib.Timer.delay(0.19)
-                if self.cameraToggle is 0:
-                    self.server.setSource(self.camera1)
-                else:
-                    self.server.setSource(self.camera2)
+                    wpilib.Timer.delay(0.2)
+            if self.cameraToggle is 0:
+                self.server.setSource(self.camera1)
+            else:
+                self.server.setSource(self.camera2)
         except:
             if not self.isFmsAttached():
                 raise

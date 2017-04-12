@@ -23,7 +23,7 @@ class DanceDanceRevolution(StatefulAutonomous):
     def dance(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, self.navx.drive(0.77, 0.77, 0), 0) #Drive forward and dance
     
-    @timed_state(duration=1.5, next_state='stop')
+    @timed_state(duration=2.5, next_state='stop')
     def turn_straight(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, self.navx.drive(self.sd.getNumber("slowSpeed"), self.sd.getNumber("fastSpeed"), 0), 0) #Drive forward and straight
 

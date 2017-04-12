@@ -15,7 +15,7 @@ class CenterPeg(StatefulAutonomous):
         self.robot_drive.mecanumDrive_Cartesian(0, 0, 0, 0) #Stop robot
         self.navx.reset()
 
-    @timed_state(duration=2.7, next_state='stop')
+    @timed_state(duration=3.7, next_state='stop')
     def drive_forward(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, self.navx.drive(self.sd.getNumber("slowSpeed"), self.sd.getNumber("fastSpeed"), 0), 0) #Drive forward and straight
 
