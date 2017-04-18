@@ -8,8 +8,8 @@ from networktables import NetworkTables
 from robotpy_ext.autonomous.selector import AutonomousModeSelector
 from robotpy_ext.common_drivers.navx import AHRS
 from hal.functions import isSimulation
-isSimulation = wpilib.RobotBase.isSimulation()
-if isSimulation:
+simulation = wpilib.RobotBase.isSimulation()
+if simulation:
     pass
 else:
     from cscore import CameraServer, UsbCamera
@@ -26,7 +26,7 @@ class MyRobot(wpilib.IterativeRobot):
         # joystick 1 on the driver station
         self.stick = wpilib.XboxController(0)
         
-        if isSimulation:
+        if simulation:
             pass
         else:
             cs = CameraServer.getInstance()
@@ -134,7 +134,7 @@ class MyRobot(wpilib.IterativeRobot):
                         self.cameraToggle = 0
                         self.driveToggle = 1
                     wpilib.Timer.delay(0.2)
-            if isSimulation:
+            if simulation:
                 pass
             else:
                 if self.cameraToggle is 0:
@@ -189,7 +189,7 @@ class MyRobot(wpilib.IterativeRobot):
                 if self.stick.getRawButton(1): # A button
                     self.shooter.set(1)
                 else:
-                    self.shooter.set(0.62)
+                    self.shooter.set(0.63)
                 if self.afterButton > 20:
                     self.agitator.set(-1)
                 if self.afterButton > 50:

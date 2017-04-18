@@ -19,7 +19,7 @@ class LeftPegRed(StatefulAutonomous):
     def drive_forward(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, self.navx.drive(self.sd.getNumber("slowSpeed"), self.sd.getNumber("fastSpeed"), 0), 0) #Drive forward and straight
 
-    @timed_state(duration=2.74, next_state='stop')
+    @timed_state(duration=4.0, next_state='stop')
     def turn_right(self):
         self.robot_drive.mecanumDrive_Cartesian(0, 0.25, self.navx.drive(self.sd.getNumber("slowSpeed"), self.sd.getNumber("fastSpeed"), 60), 0) #Drive forward at 45 degrees right
 

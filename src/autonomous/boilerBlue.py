@@ -18,7 +18,7 @@ class boilerBlue(StatefulAutonomous):
 
     @timed_state(duration=8.0, next_state='turn_right')
     def shoot(self):
-        self.shooter.set(0.70)
+        self.shooter.set(0.63)
         if self.counter > 20:
             self.agitator.set(-1)
         if self.counter > 75:
